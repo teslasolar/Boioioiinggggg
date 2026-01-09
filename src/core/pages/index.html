@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONOMI - Core Module</title>
+  <style>
+    :root {
+      --gold: #d4af37;
+      --dark: #1a1a2e;
+      --darker: #16213e;
+      --accent: #0f3460;
+      --light: #e8e8e8;
+      --success: #4ecca3;
+      --t0: #4ecca3;
+      --t1: #ffd369;
+      --t2: #ff6b6b;
+      --t3: #c44569;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      background: var(--dark);
+      color: var(--light);
+      line-height: 1.618;
+    }
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+    header { padding: 2rem; border-bottom: 2px solid var(--gold); margin-bottom: 2rem; }
+    h1 { color: var(--gold); font-size: 2rem; }
+    h2 { color: var(--gold); font-size: 1.4rem; margin: 2rem 0 1rem; border-bottom: 1px solid var(--accent); padding-bottom: 0.5rem; }
+    h3 { color: var(--success); font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+    a { color: var(--gold); }
+    .breadcrumb { margin-bottom: 1rem; font-size: 0.9rem; }
+    .breadcrumb a { color: var(--light); opacity: 0.7; }
+    pre { background: var(--darker); padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; border-left: 3px solid var(--gold); }
+    code { color: var(--success); }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--accent); }
+    th { color: var(--gold); }
+    .nav-back { display: inline-block; margin-bottom: 1rem; padding: 0.5rem 1rem; background: var(--accent); border-radius: 4px; text-decoration: none; color: var(--light); }
+    .tier { padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; }
+    .tier-t0 { background: var(--t0); color: var(--dark); }
+    .tier-t1 { background: var(--t1); color: var(--dark); }
+    .tier-t2 { background: var(--t2); color: var(--light); }
+    .tier-t3 { background: var(--t3); color: var(--light); }
+    .const-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .const-card { background: var(--darker); padding: 1rem; border-radius: 8px; text-align: center; }
+    .const-card .symbol { font-size: 2rem; color: var(--gold); }
+    .const-card .value { font-size: 1.2rem; color: var(--success); font-family: monospace; }
+    .const-card .name { font-size: 0.8rem; opacity: 0.7; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="breadcrumb">
+        <a href="../../../index.html">🌀 KONOMI</a> /
+        <a href="../../../pages/index.html">Docs</a> /
+        Core
+      </div>
+      <h1>🔮 Core Module</h1>
+      <p>φ constants, types, symbols, and foundational utilities</p>
+    </header>
+
+    <a href="../../../pages/index.html" class="nav-back">← Back to Docs</a>
+
+    <section>
+      <h2>Files</h2>
+      <table>
+        <tr><th>File</th><th>Description</th></tr>
+        <tr><td><code>phi.ts</code></td><td>Golden ratio constants and tier system</td></tr>
+        <tr><td><code>types.ts</code></td><td>Core type definitions and symbols</td></tr>
+        <tr><td><code>index.ts</code></td><td>Module exports</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>φ (Phi) Constants</h2>
+      <p>Constants based on the golden ratio, organized by computational tier.</p>
+
+      <h3>T0⚡ Instant (Zero Cost)</h3>
+      <p>Golden ratio family - derived from φ with no computation.</p>
+      <div class="const-grid">
+        <div class="const-card">
+          <div class="symbol">φ</div>
+          <div class="value">1.6180339887</div>
+          <div class="name">PHI - Golden Ratio</div>
+        </div>
+        <div class="const-card">
+          <div class="symbol">κ*</div>
+          <div class="value">0.6180339887</div>
+          <div class="name">KAPPA_STAR - Optimal</div>
+        </div>
+        <div class="const-card">
+          <div class="symbol">φ²</div>
+          <div class="value">2.6180339887</div>
+          <div class="name">PHI_SQUARED</div>
+        </div>
+        <div class="const-card">
+          <div class="symbol">1/φ²</div>
+          <div class="value">0.3819660112</div>
+          <div class="name">INV_PHI_SQUARED</div>
+        </div>
+        <div class="const-card">
+          <div class="symbol">√5</div>
+          <div class="value">2.2360679775</div>
+          <div class="name">SQRT_5</div>
+        </div>
+        <div class="const-card">
+          <div class="symbol">cos36°</div>
+          <div class="value">0.8090169944</div>
+          <div class="name">COS_36</div>
+        </div>
+      </div>
+
+      <h3>T1⏱ Moderate (2Φu)</h3>
+      <div class="const-grid">
+        <div class="const-card">
+          <div class="symbol">σ</div>
+          <div class="value">2.4142135624</div>
+          <div class="name">SIGMA - Silver Ratio</div>
+        </div>
+        <div class="const-card">
+          <div class="symbol">√2</div>
+          <div class="value">1.4142135624</div>
+          <div class="name">SQRT_2</div>
+        </div>
+        <div class="const-card">
+          <div class="symbol">√3</div>
+          <div class="value">1.7320508076</div>
+          <div class="name">SQRT_3</div>
+        </div>
+      </div>
+
+      <h3>T2⏱ Higher (3-5Φu)</h3>
+      <div class="const-grid">
+        <div class="const-card">
+          <div class="symbol">√6</div>
+          <div class="value">2.4494897428</div>
+          <div class="name">SQRT_6</div>
+        </div>
+        <div class="const-card">
+          <div class="symbol">√7</div>
+          <div class="value">2.6457513111</div>
+          <div class="name">SQRT_7</div>
+        </div>
+        <div class="const-card">
+          <div class="symbol">√10</div>
+          <div class="value">3.1622776602</div>
+          <div class="name">SQRT_10</div>
+        </div>
+      </div>
+
+      <h3>T3⏱ Expensive (10Φu, Cached)</h3>
+      <div class="const-grid">
+        <div class="const-card">
+          <div class="symbol">π</div>
+          <div class="value">3.1415926536</div>
+          <div class="name">PI</div>
+        </div>
+        <div class="const-card">
+          <div class="symbol">e</div>
+          <div class="value">2.7182818285</div>
+          <div class="name">E - Euler's Number</div>
+        </div>
+        <div class="const-card">
+          <div class="symbol">ln2</div>
+          <div class="value">0.6931471806</div>
+          <div class="name">LN_2</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Tier System</h2>
+      <table>
+        <tr><th>Tier</th><th>Symbol</th><th>Cost</th><th>Constants</th></tr>
+        <tr>
+          <td><span class="tier tier-t0">T0</span></td>
+          <td>⚡</td>
+          <td>0 Φu</td>
+          <td>φ, 1/φ, φ², √5, cos36°, cos72°</td>
+        </tr>
+        <tr>
+          <td><span class="tier tier-t1">T1</span></td>
+          <td>⏱</td>
+          <td>2 Φu</td>
+          <td>σ, √2, √3</td>
+        </tr>
+        <tr>
+          <td><span class="tier tier-t2">T2</span></td>
+          <td>⏱</td>
+          <td>3-5 Φu</td>
+          <td>√6, √7, √10</td>
+        </tr>
+        <tr>
+          <td><span class="tier tier-t3">T3</span></td>
+          <td>⏱</td>
+          <td>10 Φu</td>
+          <td>π, e, ln2 (cached)</td>
+        </tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>Types & Symbols</h2>
+      <h3>Flow Symbols</h3>
+      <pre><code>→  FLOW       - Direction/transformation
+⊕  MERGE      - Combine/join
+◊  OPTIONAL   - Optional value
+∞  INFINITE   - Unbounded/stream
+△  UP         - Ascending/emit
+▽  DOWN       - Descending/receive
+●  FILLED     - Active state
+○  EMPTY      - Inactive state
+⚡ INSTANT    - Zero-cost operation
+⏱  TIMED      - Computed operation
+✓  SUCCESS    - Operation succeeded
+✗  FAILURE    - Operation failed
+∴  THEREFORE  - Conclusion
+∵  BECAUSE    - Reason</code></pre>
+
+      <h3>Subsystem Operations</h3>
+      <pre><code>α: α1→scaffold, α2→wire, α3→clean
+β: β1→parse, β2→transform, β3→emit, β4→chain
+γ: γ1→hydrate, γ2→query, γ3→mutate, γ4→evict
+δ: δ1→config, δ2→init, δ3→monitor, δ4→stop
+ε: ε1→route, ε2→validate, ε3→respond, ε4→stream
+ζ: ζ1→assert, ζ2→mock, ζ3→cover, ζ4→report
+η: η1→extract, η2→generate, η3→publish
+θ: θ1→diff, θ2→push, θ3→pull, θ4→resolve</code></pre>
+    </section>
+
+    <section>
+      <h2>Usage</h2>
+      <pre><code>import {
+  PHI, KAPPA_STAR, PHI_UNIT,
+  evaluateKappa, optimalKappa,
+  getTierInfo, deriveByTier,
+  success, failure, isSuccess
+} from '@konomi/core';
+
+// Get optimal kappa
+const kappa = optimalKappa(); // 0.618
+
+// Evaluate kappa state
+const state = evaluateKappa(0.6);
+// { value: 0.6, label: 'optimal' }
+
+// Get tier info
+const t1 = getTierInfo('T1');
+// { tier: 'T1', cost: 1.388, cached: false, symbol: '⏱' }
+
+// Result type usage
+const result = success({ data: 'value' });
+if (isSuccess(result)) {
+  console.log(result.value); // { data: 'value' }
+}</code></pre>
+    </section>
+  </div>
+</body>
+</html>

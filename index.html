@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONOMI v3.1</title>
+  <style>
+    :root {
+      --phi: 1.618;
+      --kappa: 0.618;
+      --gold: #d4af37;
+      --dark: #1a1a2e;
+      --darker: #16213e;
+      --accent: #0f3460;
+      --light: #e8e8e8;
+      --success: #4ecca3;
+      --warn: #ffd369;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      background: var(--dark);
+      color: var(--light);
+      min-height: 100vh;
+      line-height: 1.618;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    header {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, var(--darker) 0%, var(--accent) 100%);
+      border-bottom: 3px solid var(--gold);
+    }
+    .logo { font-size: 4rem; margin-bottom: 1rem; }
+    h1 { font-size: 2.618rem; color: var(--gold); margin-bottom: 0.5rem; }
+    .tagline { color: var(--light); opacity: 0.8; font-size: 1.2rem; }
+    .spec {
+      background: var(--darker);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 2rem auto;
+      max-width: 600px;
+      font-size: 0.9rem;
+      border-left: 4px solid var(--gold);
+    }
+    .spec code { color: var(--success); }
+    nav { padding: 2rem 0; }
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .nav-card {
+      background: var(--darker);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: var(--light);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid transparent;
+    }
+    .nav-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(212, 175, 55, 0.2);
+      border-color: var(--gold);
+    }
+    .nav-card h3 {
+      color: var(--gold);
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-card p { opacity: 0.8; font-size: 0.9rem; }
+    .nav-card .ops {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--success);
+    }
+    .section { padding: 3rem 0; }
+    .section h2 {
+      color: var(--gold);
+      font-size: 1.618rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--accent);
+      padding-bottom: 0.5rem;
+    }
+    .constants {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+    .const-item {
+      background: var(--darker);
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .const-item .symbol { font-size: 1.5rem; color: var(--gold); }
+    .const-item .value { font-size: 0.9rem; color: var(--success); }
+    .const-item .name { font-size: 0.75rem; opacity: 0.7; }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--accent);
+      margin-top: 2rem;
+      opacity: 0.7;
+    }
+    .boot-seq {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    .boot-phase {
+      background: var(--accent);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .boot-phase.active { background: var(--gold); color: var(--dark); }
+    .arrow { color: var(--gold); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🌀</div>
+    <h1>KONOMI v3.1</h1>
+    <p class="tagline">Industrial Automation Platform with P2P Capabilities</p>
+    <div class="spec">
+      <code>Ω⊃{α,β,γ,δ,ε,ζ,η,θ}⊃{1,2,3,4}</code><br>
+      <code>κ∈[0,1] | κ*=1/φ=0.618 optimal</code><br>
+      <code>∴Ω→agents→tasks→output</code>
+    </div>
+  </header>
+
+  <div class="container">
+    <section class="section">
+      <h2>⚡ Boot Sequence</h2>
+      <div class="boot-seq">
+        <span class="boot-phase">ζ test</span>
+        <span class="arrow">→</span>
+        <span class="boot-phase">α arch</span>
+        <span class="arrow">→</span>
+        <span class="boot-phase">δ sys</span>
+        <span class="arrow">→</span>
+        <span class="boot-phase">γ cache</span>
+        <span class="arrow">→</span>
+        <span class="boot-phase">β build</span>
+        <span class="arrow">→</span>
+        <span class="boot-phase">ε api</span>
+        <span class="arrow">→</span>
+        <span class="boot-phase">θ sync</span>
+        <span class="arrow">→</span>
+        <span class="boot-phase active">✓</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>φ Constants</h2>
+      <div class="constants">
+        <div class="const-item">
+          <div class="symbol">φ</div>
+          <div class="value">1.618</div>
+          <div class="name">Golden Ratio</div>
+        </div>
+        <div class="const-item">
+          <div class="symbol">κ*</div>
+          <div class="value">0.618</div>
+          <div class="name">Optimal Kappa</div>
+        </div>
+        <div class="const-item">
+          <div class="symbol">φ²</div>
+          <div class="value">2.618</div>
+          <div class="name">Phi Squared</div>
+        </div>
+        <div class="const-item">
+          <div class="symbol">1/φ²</div>
+          <div class="value">0.382</div>
+          <div class="name">Inv Phi Sq</div>
+        </div>
+        <div class="const-item">
+          <div class="symbol">√5</div>
+          <div class="value">2.236</div>
+          <div class="name">Root Five</div>
+        </div>
+        <div class="const-item">
+          <div class="symbol">Φu</div>
+          <div class="value">0.694</div>
+          <div class="name">Phi Unit (bits)</div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="section">
+      <h2>📚 Documentation</h2>
+      <div class="nav-grid">
+        <a href="pages/index.html" class="nav-card">
+          <h3>📖 Overview</h3>
+          <p>Complete system documentation and architecture guide</p>
+        </a>
+        <a href="src/core/pages/index.html" class="nav-card">
+          <h3>🔮 Core</h3>
+          <p>φ constants, types, symbols, and foundational utilities</p>
+          <div class="ops">T0⚡→T1⏱→T2⏱→T3⏱</div>
+        </a>
+        <a href="src/stacks/pages/index.html" class="nav-card">
+          <h3>📚 Stacks</h3>
+          <p>Val, Equip, and Peer data transformation pipelines</p>
+          <div class="ops">raw→typed→qual→ts→tag→alarm</div>
+        </a>
+        <a href="src/subsystems/pages/index.html" class="nav-card">
+          <h3>⚙️ Subsystems</h3>
+          <p>All 8 subsystems: α β γ δ ε ζ η θ</p>
+          <div class="ops">arch|build|cache|sys|api|test|doc|sync</div>
+        </a>
+        <a href="src/engines/pages/index.html" class="nav-card">
+          <h3>🌀 Engines</h3>
+          <p>Omega orchestrator and system boot sequence</p>
+          <div class="ops">Ω.boot→ζ→α→δ→γ→β→ε→θ→✓</div>
+        </a>
+      </div>
+    </nav>
+
+    <section class="section">
+      <h2>🔗 Quick Reference</h2>
+      <div class="nav-grid">
+        <div class="nav-card">
+          <h3>Stack:Val</h3>
+          <p>Value transformation pipeline</p>
+          <div class="ops">raw→typed→qual→ts→tag→alarm</div>
+        </div>
+        <div class="nav-card">
+          <h3>Stack:Equip</h3>
+          <p>ISA-88/95 equipment hierarchy</p>
+          <div class="ops">CM→EM→Unit→Cell→Area→Site</div>
+        </div>
+        <div class="nav-card">
+          <h3>Stack:Peer</h3>
+          <p>P2P networking stack</p>
+          <div class="ops">Key→Id→Addr→Info→Conn→Mesh</div>
+        </div>
+        <div class="nav-card">
+          <h3>API Pattern</h3>
+          <p>REST and WebSocket endpoints</p>
+          <div class="ops">/{e}/{r}/{a}?{p} | WS:∞(▽→λ→△)</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p>🌀 KONOMI v3.1 | κ*=1/φ=62%chaos+38%order</p>
+  </footer>
+</body>
+</html>
