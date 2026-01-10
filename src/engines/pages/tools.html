@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONOMI - Omega Tools</title>
+  <style>
+    :root {
+      --gold: #d4af37;
+      --dark: #1a1a2e;
+      --darker: #16213e;
+      --accent: #0f3460;
+      --light: #e8e8e8;
+      --success: #4ecca3;
+      --warn: #ffd369;
+      --error: #ff6b6b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'SF Mono', 'Fira Code', monospace; background: var(--dark); color: var(--light); line-height: 1.618; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+    header { padding: 2rem; border-bottom: 2px solid var(--gold); margin-bottom: 2rem; }
+    h1 { color: var(--gold); font-size: 2rem; }
+    h2 { color: var(--gold); font-size: 1.4rem; margin: 2rem 0 1rem; }
+    h3 { color: var(--success); font-size: 1.1rem; margin: 1rem 0 0.5rem; }
+    a { color: var(--gold); }
+    .breadcrumb { margin-bottom: 1rem; font-size: 0.9rem; }
+    .breadcrumb a { color: var(--light); opacity: 0.7; }
+    .nav-back { display: inline-block; margin-bottom: 1rem; padding: 0.5rem 1rem; background: var(--accent); border-radius: 4px; text-decoration: none; color: var(--light); }
+    .tool-card { background: var(--darker); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; border: 1px solid var(--accent); }
+    input, select, button, textarea { font-family: inherit; font-size: 1rem; padding: 0.75rem 1rem; border-radius: 6px; border: 1px solid var(--accent); background: var(--dark); color: var(--light); }
+    button { background: var(--gold); color: var(--dark); cursor: pointer; font-weight: bold; border: none; }
+    button:hover { opacity: 0.9; }
+    button.secondary { background: var(--accent); color: var(--light); }
+    button.danger { background: var(--error); color: var(--light); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .input-group { display: flex; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; align-items: center; }
+    .output { background: var(--dark); padding: 1rem; border-radius: 6px; margin-top: 1rem; border-left: 3px solid var(--gold); overflow-x: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    textarea { width: 100%; min-height: 100px; resize: vertical; }
+
+    /* Boot Sequence */
+    .boot-sequence { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem; margin: 2rem 0; padding: 1.5rem; background: var(--dark); border-radius: 12px; }
+    .boot-phase { padding: 1rem 1.25rem; border-radius: 8px; background: var(--accent); font-weight: bold; text-align: center; min-width: 70px; transition: all 0.3s; position: relative; }
+    .boot-phase .label { font-size: 0.75rem; opacity: 0.7; }
+    .boot-phase .id { font-size: 1.5rem; }
+    .boot-phase.pending { opacity: 0.4; }
+    .boot-phase.active { background: var(--warn); color: var(--dark); transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 211, 105, 0.5); }
+    .boot-phase.complete { background: var(--success); color: var(--dark); }
+    .boot-phase.error { background: var(--error); color: var(--light); }
+    .boot-arrow { color: var(--gold); font-size: 1.5rem; }
+
+    /* Kappa */
+    .kappa-display { text-align: center; padding: 2rem; background: var(--dark); border-radius: 12px; margin: 1rem 0; }
+    .kappa-value { font-size: 4rem; color: var(--gold); font-weight: bold; }
+    .kappa-label { font-size: 1.2rem; margin-top: 0.5rem; }
+    .kappa-bar { height: 30px; background: linear-gradient(to right, var(--accent) 0%, var(--gold) 61.8%, var(--success) 100%); border-radius: 6px; position: relative; margin: 1rem 0; }
+    .kappa-marker { position: absolute; top: -5px; width: 6px; height: 40px; background: white; border-radius: 3px; transition: left 0.3s; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+    .kappa-labels { display: flex; justify-content: space-between; font-size: 0.9rem; opacity: 0.7; }
+    input[type="range"] { width: 100%; margin: 1rem 0; }
+
+    /* Status Grid */
+    .status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin: 1rem 0; }
+    .status-item { background: var(--dark); padding: 0.75rem; border-radius: 6px; text-align: center; }
+    .status-item.active { border: 2px solid var(--success); }
+    .status-item .id { font-size: 1.2rem; color: var(--gold); }
+    .status-item .name { font-size: 0.75rem; opacity: 0.7; }
+
+    /* Agent/Task */
+    .agent-card { background: var(--dark); padding: 1rem; border-radius: 8px; margin: 0.5rem 0; border-left: 4px solid var(--accent); }
+    .agent-card.active { border-left-color: var(--success); }
+    .task-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--darker); margin: 0.25rem 0; border-radius: 4px; }
+    .task-item.running { border-left: 3px solid var(--warn); }
+    .task-item.complete { border-left: 3px solid var(--success); opacity: 0.7; }
+
+    /* Log */
+    .log-container { max-height: 250px; overflow-y: auto; background: var(--dark); border-radius: 6px; padding: 0.5rem; }
+    .log-entry { padding: 0.25rem 0.5rem; font-size: 0.85rem; border-bottom: 1px solid var(--accent); }
+    .log-entry.info { color: var(--light); }
+    .log-entry.success { color: var(--success); }
+    .log-entry.warn { color: var(--warn); }
+    .log-entry.error { color: var(--error); }
+    .log-entry .time { opacity: 0.5; margin-right: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="breadcrumb">
+        <a href="../../../index.html">🌀 KONOMI</a> /
+        <a href="index.html">Engines</a> /
+        Tools
+      </div>
+      <h1>🌀 Omega Tools</h1>
+      <p>Boot simulator, agent/task runner, and system control</p>
+    </header>
+
+    <a href="index.html" class="nav-back">← Back to Engines Docs</a>
+
+    <!-- BOOT SIMULATOR -->
+    <div class="tool-card">
+      <h3>⚡ Boot Sequence Simulator</h3>
+      <p>Simulate the Omega boot sequence: ζ(X)→α→δ→γ→β→ε→θ→✓</p>
+
+      <div class="boot-sequence" id="boot-sequence">
+        <div class="boot-phase pending" data-phase="zeta">
+          <div class="id">ζ</div>
+          <div class="label">test</div>
+        </div>
+        <span class="boot-arrow">→</span>
+        <div class="boot-phase pending" data-phase="alpha">
+          <div class="id">α</div>
+          <div class="label">arch</div>
+        </div>
+        <span class="boot-arrow">→</span>
+        <div class="boot-phase pending" data-phase="delta">
+          <div class="id">δ</div>
+          <div class="label">sys</div>
+        </div>
+        <span class="boot-arrow">→</span>
+        <div class="boot-phase pending" data-phase="gamma">
+          <div class="id">γ</div>
+          <div class="label">cache</div>
+        </div>
+        <span class="boot-arrow">→</span>
+        <div class="boot-phase pending" data-phase="beta">
+          <div class="id">β</div>
+          <div class="label">build</div>
+        </div>
+        <span class="boot-arrow">→</span>
+        <div class="boot-phase pending" data-phase="epsilon">
+          <div class="id">ε</div>
+          <div class="label">api</div>
+        </div>
+        <span class="boot-arrow">→</span>
+        <div class="boot-phase pending" data-phase="theta">
+          <div class="id">θ</div>
+          <div class="label">sync</div>
+        </div>
+        <span class="boot-arrow">→</span>
+        <div class="boot-phase pending" data-phase="complete">
+          <div class="id">✓</div>
+          <div class="label">ready</div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <button id="btn-boot" onclick="startBoot()">🚀 Boot System</button>
+        <button id="btn-step" onclick="stepBoot()" class="secondary">Step →</button>
+        <button id="btn-reset" onclick="resetBoot()" class="secondary">Reset</button>
+        <button id="btn-shutdown" onclick="shutdown()" class="danger" disabled>Shutdown</button>
+        <label><input type="checkbox" id="boot-fast"> Fast mode</label>
+        <label><input type="checkbox" id="boot-fail-zeta"> Fail ζ</label>
+      </div>
+
+      <div class="output" id="boot-status">
+        <strong>Status:</strong> <span id="system-state">stopped</span><br>
+        <strong>Phase:</strong> <span id="current-phase">—</span><br>
+        <strong>Ready:</strong> <span id="system-ready">false</span>
+      </div>
+    </div>
+
+    <!-- KAPPA CONTROLLER -->
+    <div class="tool-card">
+      <h3>⚖️ Kappa (κ) Controller</h3>
+      <p>Control the chaos/order balance parameter in real-time</p>
+
+      <div class="kappa-display">
+        <div class="kappa-value" id="kappa-value">0.618</div>
+        <div class="kappa-label" id="kappa-state">optimal</div>
+      </div>
+
+      <div class="kappa-bar">
+        <div class="kappa-marker" id="kappa-marker" style="left: 61.8%;"></div>
+      </div>
+
+      <div class="kappa-labels">
+        <span>0 (Order)</span>
+        <span>κ* = 0.618</span>
+        <span>1 (Chaos)</span>
+      </div>
+
+      <input type="range" id="kappa-slider" min="0" max="1" step="0.001" value="0.618" oninput="setKappa(this.value)">
+
+      <div class="grid">
+        <div class="status-item">
+          <div class="id" id="chaos-pct">62%</div>
+          <div class="name">Chaos</div>
+        </div>
+        <div class="status-item">
+          <div class="id" id="order-pct">38%</div>
+          <div class="name">Order</div>
+        </div>
+        <div class="status-item">
+          <div class="id" id="phi-mult">1.00x</div>
+          <div class="name">φ Multiplier</div>
+        </div>
+        <div class="status-item">
+          <div class="id" id="entropy">0.69</div>
+          <div class="name">Entropy (Φu)</div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <button onclick="setKappa(0)">Pure Order</button>
+        <button onclick="setKappa(0.618)">Optimal (κ*)</button>
+        <button onclick="setKappa(1)">Pure Chaos</button>
+        <button onclick="setKappa(Math.random())" class="secondary">🎲 Random</button>
+      </div>
+    </div>
+
+    <!-- SUBSYSTEMS STATUS -->
+    <div class="tool-card">
+      <h3>📊 Subsystems Status</h3>
+      <p>Real-time status of all 8 subsystems</p>
+
+      <div class="status-grid" id="subsystems-status">
+        <div class="status-item" data-sub="alpha"><div class="id">α</div><div class="name">arch</div></div>
+        <div class="status-item" data-sub="beta"><div class="id">β</div><div class="name">build</div></div>
+        <div class="status-item" data-sub="gamma"><div class="id">γ</div><div class="name">cache</div></div>
+        <div class="status-item" data-sub="delta"><div class="id">δ</div><div class="name">sys</div></div>
+        <div class="status-item" data-sub="epsilon"><div class="id">ε</div><div class="name">api</div></div>
+        <div class="status-item" data-sub="zeta"><div class="id">ζ</div><div class="name">test</div></div>
+        <div class="status-item" data-sub="eta"><div class="id">η</div><div class="name">doc</div></div>
+        <div class="status-item" data-sub="theta"><div class="id">θ</div><div class="name">sync</div></div>
+      </div>
+    </div>
+
+    <!-- AGENT/TASK RUNNER -->
+    <div class="tool-card">
+      <h3>🤖 Agent & Task Runner</h3>
+      <p>Ω→agents→tasks→output</p>
+
+      <h4>Registered Agents</h4>
+      <div id="agents-list">
+        <div class="agent-card" data-agent="processor">
+          <strong>data-processor</strong>
+          <span style="opacity:0.7;"> — Processes data transformations</span>
+        </div>
+        <div class="agent-card" data-agent="validator">
+          <strong>validator</strong>
+          <span style="opacity:0.7;"> — Validates input data</span>
+        </div>
+        <div class="agent-card" data-agent="reporter">
+          <strong>reporter</strong>
+          <span style="opacity:0.7;"> — Generates reports</span>
+        </div>
+      </div>
+
+      <h4>Submit Task</h4>
+      <div class="grid">
+        <div class="input-group">
+          <label>Agent:</label>
+          <select id="task-agent">
+            <option value="processor">data-processor</option>
+            <option value="validator">validator</option>
+            <option value="reporter">reporter</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Task Name:</label>
+          <input type="text" id="task-name" value="Process Data">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Input (JSON):</label>
+        <textarea id="task-input" style="min-height: 60px;">{"data": [1, 2, 3, 4, 5]}</textarea>
+      </div>
+      <div class="input-group">
+        <button onclick="submitTask()">Submit Task</button>
+        <button onclick="submitTask(); submitTask(); submitTask();" class="secondary">Submit 3x</button>
+        <button onclick="clearTasks()" class="secondary">Clear</button>
+      </div>
+
+      <h4>Task Queue & Results</h4>
+      <div id="task-list"></div>
+
+      <div class="output">
+        <strong>Last Output:</strong>
+        <pre id="task-output">—</pre>
+      </div>
+    </div>
+
+    <!-- SYSTEM LOG -->
+    <div class="tool-card">
+      <h3>📜 System Log</h3>
+      <div class="log-container" id="system-log"></div>
+      <div class="input-group" style="margin-top: 0.5rem;">
+        <button onclick="clearLog()" class="secondary">Clear Log</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Constants
+    const PHI = 1.618;
+    const KAPPA_STAR = 0.618;
+    const PHI_UNIT = 0.694;
+
+    // State
+    let systemState = 'stopped';
+    let currentPhase = null;
+    let bootPhases = ['zeta', 'alpha', 'delta', 'gamma', 'beta', 'epsilon', 'theta', 'complete'];
+    let bootIndex = -1;
+    let bootInterval = null;
+    let kappa = KAPPA_STAR;
+    let subsystems = { alpha: false, beta: false, gamma: false, delta: false, epsilon: false, zeta: false, eta: false, theta: false };
+    let tasks = [];
+    let taskId = 0;
+
+    // Logging
+    function log(message, level = 'info') {
+      const container = document.getElementById('system-log');
+      const time = new Date().toLocaleTimeString();
+      container.innerHTML += `<div class="log-entry ${level}"><span class="time">${time}</span>${message}</div>`;
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function clearLog() {
+      document.getElementById('system-log').innerHTML = '';
+    }
+
+    // Boot Sequence
+    function startBoot() {
+      if (systemState === 'running') return;
+      systemState = 'booting';
+      bootIndex = -1;
+      updateUI();
+      log('🚀 Starting boot sequence...', 'info');
+
+      const fast = document.getElementById('boot-fast').checked;
+      const delay = fast ? 200 : 800;
+
+      bootInterval = setInterval(() => {
+        stepBoot();
+        if (bootIndex >= bootPhases.length - 1) {
+          clearInterval(bootInterval);
+        }
+      }, delay);
+    }
+
+    function stepBoot() {
+      if (systemState === 'running' || systemState === 'error') return;
+
+      bootIndex++;
+      if (bootIndex >= bootPhases.length) return;
+
+      const phase = bootPhases[bootIndex];
+      currentPhase = phase;
+
+      // Check for simulated failure
+      if (phase === 'zeta' && document.getElementById('boot-fail-zeta').checked) {
+        systemState = 'error';
+        log(`✗ Boot failed at ζ (test): Simulated failure`, 'error');
+        updatePhaseUI(phase, 'error');
+        clearInterval(bootInterval);
+        updateUI();
+        return;
+      }
+
+      log(`→ Booting ${phase}...`, 'info');
+      updatePhaseUI(phase, 'active');
+
+      // Mark previous as complete
+      if (bootIndex > 0) {
+        updatePhaseUI(bootPhases[bootIndex - 1], 'complete');
+        const subName = bootPhases[bootIndex - 1];
+        if (subsystems.hasOwnProperty(subName)) {
+          subsystems[subName] = true;
+          updateSubsystemUI();
+        }
+      }
+
+      // Complete
+      if (phase === 'complete') {
+        systemState = 'running';
+        log('✓ System ready!', 'success');
+        updatePhaseUI(phase, 'complete');
+      }
+
+      updateUI();
+    }
+
+    function resetBoot() {
+      clearInterval(bootInterval);
+      systemState = 'stopped';
+      bootIndex = -1;
+      currentPhase = null;
+      subsystems = { alpha: false, beta: false, gamma: false, delta: false, epsilon: false, zeta: false, eta: false, theta: false };
+
+      document.querySelectorAll('.boot-phase').forEach(el => {
+        el.classList.remove('active', 'complete', 'error');
+        el.classList.add('pending');
+      });
+
+      updateSubsystemUI();
+      updateUI();
+      log('System reset', 'warn');
+    }
+
+    function shutdown() {
+      if (systemState !== 'running') return;
+
+      log('Shutting down...', 'warn');
+      systemState = 'stopped';
+      subsystems = { alpha: false, beta: false, gamma: false, delta: false, epsilon: false, zeta: false, eta: false, theta: false };
+      resetBoot();
+      log('System stopped', 'warn');
+    }
+
+    function updatePhaseUI(phase, state) {
+      const el = document.querySelector(`[data-phase="${phase}"]`);
+      if (el) {
+        el.classList.remove('pending', 'active', 'complete', 'error');
+        el.classList.add(state);
+      }
+    }
+
+    function updateSubsystemUI() {
+      for (const [name, active] of Object.entries(subsystems)) {
+        const el = document.querySelector(`[data-sub="${name}"]`);
+        if (el) {
+          el.classList.toggle('active', active);
+        }
+      }
+    }
+
+    function updateUI() {
+      document.getElementById('system-state').textContent = systemState;
+      document.getElementById('current-phase').textContent = currentPhase || '—';
+      document.getElementById('system-ready').textContent = systemState === 'running';
+
+      document.getElementById('btn-boot').disabled = systemState === 'running' || systemState === 'booting';
+      document.getElementById('btn-step').disabled = systemState === 'running' || systemState === 'error';
+      document.getElementById('btn-shutdown').disabled = systemState !== 'running';
+    }
+
+    // Kappa Controller
+    function setKappa(value) {
+      kappa = parseFloat(value);
+      document.getElementById('kappa-slider').value = kappa;
+      document.getElementById('kappa-value').textContent = kappa.toFixed(3);
+      document.getElementById('kappa-marker').style.left = `${kappa * 100}%`;
+
+      const threshold = 0.1;
+      const isOptimal = Math.abs(kappa - KAPPA_STAR) < threshold;
+      const state = isOptimal ? 'optimal' : kappa < 0.5 ? 'order' : 'chaos';
+      document.getElementById('kappa-state').textContent = state;
+      document.getElementById('kappa-state').style.color =
+        state === 'optimal' ? 'var(--gold)' : state === 'order' ? 'var(--accent)' : 'var(--success)';
+
+      document.getElementById('chaos-pct').textContent = `${(kappa * 100).toFixed(1)}%`;
+      document.getElementById('order-pct').textContent = `${((1 - kappa) * 100).toFixed(1)}%`;
+      document.getElementById('phi-mult').textContent = `${(kappa * PHI).toFixed(2)}x`;
+      document.getElementById('entropy').textContent = (kappa * PHI_UNIT * 2).toFixed(2);
+
+      log(`κ set to ${kappa.toFixed(3)} (${state})`, 'info');
+    }
+
+    // Agent/Task System
+    function submitTask() {
+      if (systemState !== 'running') {
+        log('Cannot submit task: system not running', 'error');
+        return;
+      }
+
+      const agent = document.getElementById('task-agent').value;
+      const name = document.getElementById('task-name').value;
+      let input;
+      try {
+        input = JSON.parse(document.getElementById('task-input').value);
+      } catch {
+        input = document.getElementById('task-input').value;
+      }
+
+      const task = {
+        id: `task-${++taskId}`,
+        name,
+        agent,
+        input,
+        status: 'queued',
+        startTime: null,
+        endTime: null,
+        output: null
+      };
+
+      tasks.push(task);
+      log(`Task ${task.id} queued for ${agent}`, 'info');
+
+      // Highlight agent
+      document.querySelector(`[data-agent="${agent}"]`)?.classList.add('active');
+
+      // Simulate execution
+      setTimeout(() => {
+        task.status = 'running';
+        task.startTime = Date.now();
+        renderTasks();
+        log(`Task ${task.id} running...`, 'info');
+
+        setTimeout(() => {
+          task.status = 'complete';
+          task.endTime = Date.now();
+          task.output = {
+            source: 'Ω',
+            agent,
+            task: task.id,
+            output: processTask(agent, input),
+            timestamp: task.endTime
+          };
+
+          log(`Task ${task.id} complete (${task.endTime - task.startTime}ms)`, 'success');
+          document.getElementById('task-output').textContent = JSON.stringify(task.output, null, 2);
+          document.querySelector(`[data-agent="${agent}"]`)?.classList.remove('active');
+          renderTasks();
+        }, 500 + Math.random() * 1000);
+      }, 100);
+
+      renderTasks();
+    }
+
+    function processTask(agent, input) {
+      switch (agent) {
+        case 'processor':
+          if (Array.isArray(input.data)) {
+            return { processed: input.data.map(x => x * PHI), count: input.data.length };
+          }
+          return { processed: input };
+        case 'validator':
+          return { valid: true, checked: Object.keys(input).length };
+        case 'reporter':
+          return { report: `Report generated for ${JSON.stringify(input)}`, generatedAt: new Date().toISOString() };
+        default:
+          return input;
+      }
+    }
+
+    function renderTasks() {
+      const container = document.getElementById('task-list');
+      container.innerHTML = tasks.slice(-10).reverse().map(t => `
+        <div class="task-item ${t.status}">
+          <span>${t.id}: ${t.name} (${t.agent})</span>
+          <span>${t.status}${t.endTime ? ` - ${t.endTime - t.startTime}ms` : ''}</span>
+        </div>
+      `).join('');
+    }
+
+    function clearTasks() {
+      tasks = [];
+      taskId = 0;
+      renderTasks();
+      document.getElementById('task-output').textContent = '—';
+      log('Tasks cleared', 'info');
+    }
+
+    // Initialize
+    updateUI();
+    updateSubsystemUI();
+    setKappa(KAPPA_STAR);
+    log('Omega tools initialized', 'info');
+  </script>
+</body>
+</html>

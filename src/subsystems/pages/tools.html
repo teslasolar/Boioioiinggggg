@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONOMI - Subsystems Tools</title>
+  <style>
+    :root {
+      --gold: #d4af37;
+      --dark: #1a1a2e;
+      --darker: #16213e;
+      --accent: #0f3460;
+      --light: #e8e8e8;
+      --success: #4ecca3;
+      --warn: #ffd369;
+      --error: #ff6b6b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'SF Mono', 'Fira Code', monospace; background: var(--dark); color: var(--light); line-height: 1.618; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+    header { padding: 2rem; border-bottom: 2px solid var(--gold); margin-bottom: 2rem; }
+    h1 { color: var(--gold); font-size: 2rem; }
+    h2 { color: var(--gold); font-size: 1.4rem; margin: 2rem 0 1rem; }
+    h3 { color: var(--success); font-size: 1.1rem; margin: 1rem 0 0.5rem; }
+    a { color: var(--gold); }
+    .breadcrumb { margin-bottom: 1rem; font-size: 0.9rem; }
+    .breadcrumb a { color: var(--light); opacity: 0.7; }
+    .nav-back { display: inline-block; margin-bottom: 1rem; padding: 0.5rem 1rem; background: var(--accent); border-radius: 4px; text-decoration: none; color: var(--light); }
+    .tool-card { background: var(--darker); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; border: 1px solid var(--accent); }
+    input, select, button, textarea { font-family: inherit; font-size: 1rem; padding: 0.75rem 1rem; border-radius: 6px; border: 1px solid var(--accent); background: var(--dark); color: var(--light); }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); }
+    button { background: var(--gold); color: var(--dark); cursor: pointer; font-weight: bold; border: none; }
+    button:hover { opacity: 0.9; }
+    button.secondary { background: var(--accent); color: var(--light); }
+    button.danger { background: var(--error); color: var(--light); }
+    .input-group { display: flex; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; align-items: center; }
+    .output { background: var(--dark); padding: 1rem; border-radius: 6px; margin-top: 1rem; border-left: 3px solid var(--gold); overflow-x: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    textarea { width: 100%; min-height: 100px; resize: vertical; }
+    pre { white-space: pre-wrap; word-break: break-all; }
+    .tabs { display: flex; gap: 0.25rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .tab { padding: 0.5rem 1rem; background: var(--accent); border-radius: 4px 4px 0 0; cursor: pointer; font-size: 0.9rem; }
+    .tab.active { background: var(--gold); color: var(--dark); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .subsystem-id { font-size: 1.5rem; color: var(--gold); margin-right: 0.5rem; }
+    .cache-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--dark); margin: 0.25rem 0; border-radius: 4px; }
+    .test-result { padding: 0.5rem; margin: 0.25rem 0; border-radius: 4px; }
+    .test-pass { background: rgba(78, 204, 163, 0.2); border-left: 3px solid var(--success); }
+    .test-fail { background: rgba(255, 107, 107, 0.2); border-left: 3px solid var(--error); }
+    .log-entry { padding: 0.25rem 0; font-size: 0.9rem; border-bottom: 1px solid var(--accent); }
+    .log-info { color: var(--light); }
+    .log-warn { color: var(--warn); }
+    .log-error { color: var(--error); }
+    .diff-add { color: var(--success); }
+    .diff-del { color: var(--error); }
+    .diff-mod { color: var(--warn); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="breadcrumb">
+        <a href="../../../index.html">🌀 KONOMI</a> /
+        <a href="index.html">Subsystems</a> /
+        Tools
+      </div>
+      <h1>⚙️ Subsystems Tools</h1>
+      <p>Interactive demos for all 8 subsystems</p>
+    </header>
+
+    <a href="index.html" class="nav-back">← Back to Subsystems Docs</a>
+
+    <div class="tabs">
+      <div class="tab active" onclick="showSubsystem('alpha')"><span class="subsystem-id">α</span>arch</div>
+      <div class="tab" onclick="showSubsystem('beta')"><span class="subsystem-id">β</span>build</div>
+      <div class="tab" onclick="showSubsystem('gamma')"><span class="subsystem-id">γ</span>cache</div>
+      <div class="tab" onclick="showSubsystem('delta')"><span class="subsystem-id">δ</span>sys</div>
+      <div class="tab" onclick="showSubsystem('epsilon')"><span class="subsystem-id">ε</span>api</div>
+      <div class="tab" onclick="showSubsystem('zeta')"><span class="subsystem-id">ζ</span>test</div>
+      <div class="tab" onclick="showSubsystem('eta')"><span class="subsystem-id">η</span>doc</div>
+      <div class="tab" onclick="showSubsystem('theta')"><span class="subsystem-id">θ</span>sync</div>
+    </div>
+
+    <!-- ALPHA: ARCH -->
+    <div id="alpha" class="tab-content active">
+      <div class="tool-card">
+        <h3><span class="subsystem-id">α</span> Architecture: scaffold → wire → clean</h3>
+
+        <h4>Components</h4>
+        <div class="input-group">
+          <input type="text" id="comp-id" placeholder="ID" value="api">
+          <input type="text" id="comp-name" placeholder="Name" value="API Server">
+          <select id="comp-type">
+            <option value="http">http</option>
+            <option value="database">database</option>
+            <option value="cache">cache</option>
+            <option value="queue">queue</option>
+          </select>
+          <input type="text" id="comp-deps" placeholder="Dependencies (comma-sep)" value="">
+          <button onclick="scaffoldComponent()">α1: Scaffold</button>
+        </div>
+
+        <div id="arch-components" class="output"><em>No components scaffolded...</em></div>
+
+        <h4>Wiring</h4>
+        <div class="input-group">
+          <select id="wire-from"></select>
+          <span>→</span>
+          <select id="wire-to"></select>
+          <button onclick="wireComponents()">α2: Wire</button>
+        </div>
+
+        <div id="arch-wires" class="output"><em>No wires...</em></div>
+
+        <div class="input-group" style="margin-top: 1rem;">
+          <button onclick="cleanArch()" class="danger">α3: Clean All</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BETA: BUILD -->
+    <div id="beta" class="tab-content">
+      <div class="tool-card">
+        <h3><span class="subsystem-id">β</span> Build: parse → transform → emit → chain</h3>
+
+        <h4>Source Code (Simplified PLC-like)</h4>
+        <textarea id="build-source">TYPE TankData
+  level: REAL;
+  temp: REAL;
+  valve: BOOL;
+END_TYPE
+
+VAR tank1: TankData; END_VAR</textarea>
+
+        <div class="input-group">
+          <button onclick="buildParse()">β1: Parse</button>
+          <button onclick="buildTransform()">β2: Transform</button>
+          <button onclick="buildEmit()">β3: Emit</button>
+          <button onclick="buildChain()">β4: Chain All</button>
+        </div>
+
+        <div class="output">
+          <pre id="build-output">Click a button to process...</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAMMA: CACHE -->
+    <div id="gamma" class="tab-content">
+      <div class="tool-card">
+        <h3><span class="subsystem-id">γ</span> Cache: hydrate → query → mutate → evict</h3>
+
+        <div class="input-group">
+          <input type="text" id="cache-key" placeholder="Key" value="user:123">
+          <input type="text" id="cache-value" placeholder="Value (JSON)" value='{"name":"John"}'>
+          <input type="number" id="cache-ttl" placeholder="TTL (ms)" value="60000">
+          <button onclick="cacheHydrate()">γ1: Hydrate</button>
+        </div>
+
+        <div class="input-group">
+          <input type="text" id="cache-query" placeholder="Query key" value="user:123">
+          <button onclick="cacheQuery()">γ2: Query</button>
+        </div>
+
+        <div id="cache-entries"></div>
+
+        <div class="input-group" style="margin-top: 1rem;">
+          <button onclick="cacheEvictExpired()" class="secondary">γ4: Evict Expired</button>
+          <button onclick="cacheClear()" class="danger">Clear All</button>
+        </div>
+
+        <div class="output">
+          <div>Entries: <span id="cache-count">0</span> | Hits: <span id="cache-hits">0</span> | Misses: <span id="cache-misses">0</span></div>
+          <pre id="cache-output"></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- DELTA: SYS -->
+    <div id="delta" class="tab-content">
+      <div class="tool-card">
+        <h3><span class="subsystem-id">δ</span> System: config → init → monitor → stop</h3>
+
+        <div class="grid">
+          <div>
+            <h4>Configuration</h4>
+            <textarea id="sys-config">{
+  "environment": "development",
+  "kappa": 0.618,
+  "port": 8080
+}</textarea>
+            <button onclick="sysConfig()">δ1: Config</button>
+          </div>
+          <div>
+            <h4>System State</h4>
+            <div class="output">
+              <div>State: <strong id="sys-state">stopped</strong></div>
+              <div>Uptime: <span id="sys-uptime">0s</span></div>
+            </div>
+            <div class="input-group">
+              <button onclick="sysInit()">δ2: Init</button>
+              <button onclick="sysMonitor()">δ3: Monitor</button>
+              <button onclick="sysStop()" class="danger">δ4: Stop</button>
+            </div>
+          </div>
+        </div>
+
+        <h4>System Log</h4>
+        <div class="output" id="sys-log" style="max-height: 200px; overflow-y: auto;"></div>
+      </div>
+    </div>
+
+    <!-- EPSILON: API -->
+    <div id="epsilon" class="tab-content">
+      <div class="tool-card">
+        <h3><span class="subsystem-id">ε</span> API: route → validate → respond → stream</h3>
+
+        <h4>Test API Endpoint</h4>
+        <div class="input-group">
+          <select id="api-method">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+          <input type="text" id="api-path" placeholder="Path" value="/tags/TT-001" style="flex: 1;">
+          <button onclick="apiRequest()">Send Request</button>
+        </div>
+
+        <div class="input-group">
+          <textarea id="api-body" placeholder="Request body (JSON)" style="min-height: 60px;">{"value": 42}</textarea>
+        </div>
+
+        <h4>Registered Routes</h4>
+        <div id="api-routes" class="output">
+          <div>GET /health → Health check</div>
+          <div>GET /status → System status</div>
+          <div>GET /tags/:id → Get tag</div>
+          <div>POST /tags/:id → Update tag</div>
+        </div>
+
+        <h4>Response</h4>
+        <div class="output">
+          <pre id="api-output">—</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ZETA: TEST -->
+    <div id="zeta" class="tab-content">
+      <div class="tool-card">
+        <h3><span class="subsystem-id">ζ</span> Test: assert → mock → cover → report</h3>
+
+        <h4>Write Tests</h4>
+        <textarea id="test-code">// Simple test examples
+assertEqual(1 + 1, 2);
+assertEqual("hello".length, 5);
+assert(true, "This should pass");
+assertThrows(() => { throw new Error(); });
+
+// This will fail:
+// assertEqual(1, 2);</textarea>
+
+        <div class="input-group">
+          <button onclick="runTests()">ζ1-4: Run Tests</button>
+          <button onclick="clearTests()" class="secondary">Clear</button>
+        </div>
+
+        <h4>Results</h4>
+        <div id="test-results"></div>
+
+        <div class="output">
+          <div>Total: <span id="test-total">0</span> |
+               Passed: <span id="test-passed" style="color: var(--success);">0</span> |
+               Failed: <span id="test-failed" style="color: var(--error);">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ETA: DOC -->
+    <div id="eta" class="tab-content">
+      <div class="tool-card">
+        <h3><span class="subsystem-id">η</span> Documentation: extract → generate → publish</h3>
+
+        <h4>Source with JSDoc</h4>
+        <textarea id="doc-source">/**
+ * Calculate the golden ratio power
+ * @param n - The exponent
+ * @returns φ^n
+ * @example
+ * phiPower(2) // returns 2.618
+ */
+export function phiPower(n: number): number {
+  return Math.pow(1.618, n);
+}
+
+/**
+ * Tank controller class
+ * @deprecated Use TankV2 instead
+ */
+export class Tank {
+  level: number;
+}</textarea>
+
+        <div class="input-group">
+          <button onclick="docExtract()">η1: Extract</button>
+          <button onclick="docGenerate('markdown')">η2: Generate MD</button>
+          <button onclick="docGenerate('html')">η2: Generate HTML</button>
+        </div>
+
+        <div class="output">
+          <pre id="doc-output">Click Extract to parse documentation...</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- THETA: SYNC -->
+    <div id="theta" class="tab-content">
+      <div class="tool-card">
+        <h3><span class="subsystem-id">θ</span> Sync: diff → push → pull → resolve</h3>
+
+        <div class="grid">
+          <div>
+            <h4>Old State</h4>
+            <textarea id="sync-old">{
+  "name": "Tank1",
+  "level": 50,
+  "temp": 25
+}</textarea>
+          </div>
+          <div>
+            <h4>New State</h4>
+            <textarea id="sync-new">{
+  "name": "Tank1",
+  "level": 75,
+  "temp": 28,
+  "pressure": 101
+}</textarea>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <button onclick="syncDiff()">θ1: Diff</button>
+          <button onclick="syncMerge()">θ4: Merge (3-way)</button>
+        </div>
+
+        <h4>Changes</h4>
+        <div class="output">
+          <pre id="sync-output">Click Diff to compare...</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching
+    function showSubsystem(id) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      event.target.closest('.tab').classList.add('active');
+      document.getElementById(id).classList.add('active');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // ALPHA: ARCH
+    // ═══════════════════════════════════════════════════════════════════════
+    let archComponents = [];
+    let archWires = [];
+
+    function scaffoldComponent() {
+      const comp = {
+        id: document.getElementById('comp-id').value,
+        name: document.getElementById('comp-name').value,
+        type: document.getElementById('comp-type').value,
+        deps: document.getElementById('comp-deps').value.split(',').filter(d => d.trim()),
+        status: 'scaffolded'
+      };
+      archComponents.push(comp);
+      renderArch();
+    }
+
+    function wireComponents() {
+      const from = document.getElementById('wire-from').value;
+      const to = document.getElementById('wire-to').value;
+      if (from && to && from !== to) {
+        archWires.push({ from, to, id: `w${archWires.length + 1}` });
+        renderArch();
+      }
+    }
+
+    function cleanArch() {
+      archComponents = [];
+      archWires = [];
+      renderArch();
+    }
+
+    function renderArch() {
+      const compDiv = document.getElementById('arch-components');
+      const wireDiv = document.getElementById('arch-wires');
+      const fromSel = document.getElementById('wire-from');
+      const toSel = document.getElementById('wire-to');
+
+      compDiv.innerHTML = archComponents.length
+        ? archComponents.map(c => `<div class="cache-item">${c.id}: ${c.name} (${c.type}) [${c.status}]</div>`).join('')
+        : '<em>No components scaffolded...</em>';
+
+      wireDiv.innerHTML = archWires.length
+        ? archWires.map(w => `<div class="cache-item">${w.from} → ${w.to}</div>`).join('')
+        : '<em>No wires...</em>';
+
+      const opts = archComponents.map(c => `<option value="${c.id}">${c.id}</option>`).join('');
+      fromSel.innerHTML = opts;
+      toSel.innerHTML = opts;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // BETA: BUILD
+    // ═══════════════════════════════════════════════════════════════════════
+    let buildAST = null;
+
+    function buildParse() {
+      const source = document.getElementById('build-source').value;
+      // Simple parser simulation
+      const types = [...source.matchAll(/TYPE\s+(\w+)([\s\S]*?)END_TYPE/g)].map(m => ({
+        type: 'Type', name: m[1],
+        fields: [...m[2].matchAll(/(\w+):\s*(\w+)/g)].map(f => ({ name: f[1], dataType: f[2] }))
+      }));
+      const vars = [...source.matchAll(/VAR\s+(\w+):\s*(\w+)/g)].map(m => ({
+        type: 'Variable', name: m[1], dataType: m[2]
+      }));
+      buildAST = { type: 'Program', types, variables: vars };
+      document.getElementById('build-output').textContent = JSON.stringify(buildAST, null, 2);
+    }
+
+    function buildTransform() {
+      if (!buildAST) return buildParse();
+      // Add metadata transform
+      buildAST.transformed = true;
+      buildAST.timestamp = Date.now();
+      document.getElementById('build-output').textContent = JSON.stringify(buildAST, null, 2);
+    }
+
+    function buildEmit() {
+      if (!buildAST) return buildParse();
+      // Emit to pseudo-code
+      let output = '// Generated Code\n\n';
+      for (const t of buildAST.types || []) {
+        output += `struct ${t.name} {\n`;
+        for (const f of t.fields) output += `  ${f.dataType} ${f.name};\n`;
+        output += `}\n\n`;
+      }
+      for (const v of buildAST.variables || []) {
+        output += `${v.dataType} ${v.name};\n`;
+      }
+      document.getElementById('build-output').textContent = output;
+    }
+
+    function buildChain() {
+      buildParse();
+      setTimeout(() => { buildTransform(); setTimeout(buildEmit, 300); }, 300);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // GAMMA: CACHE
+    // ═══════════════════════════════════════════════════════════════════════
+    let cache = new Map();
+    let cacheStats = { hits: 0, misses: 0 };
+
+    function cacheHydrate() {
+      const key = document.getElementById('cache-key').value;
+      const value = JSON.parse(document.getElementById('cache-value').value);
+      const ttl = parseInt(document.getElementById('cache-ttl').value);
+      cache.set(key, { value, createdAt: Date.now(), ttl, accessCount: 0 });
+      renderCache();
+    }
+
+    function cacheQuery() {
+      const key = document.getElementById('cache-query').value;
+      const entry = cache.get(key);
+      if (entry) {
+        if (entry.ttl && Date.now() - entry.createdAt > entry.ttl) {
+          cache.delete(key);
+          cacheStats.misses++;
+          document.getElementById('cache-output').textContent = 'MISS (expired)';
+        } else {
+          entry.accessCount++;
+          cacheStats.hits++;
+          document.getElementById('cache-output').textContent = JSON.stringify(entry.value, null, 2);
+        }
+      } else {
+        cacheStats.misses++;
+        document.getElementById('cache-output').textContent = 'MISS';
+      }
+      renderCache();
+    }
+
+    function cacheEvictExpired() {
+      const now = Date.now();
+      for (const [key, entry] of cache) {
+        if (entry.ttl && now - entry.createdAt > entry.ttl) cache.delete(key);
+      }
+      renderCache();
+    }
+
+    function cacheClear() {
+      cache.clear();
+      cacheStats = { hits: 0, misses: 0 };
+      renderCache();
+    }
+
+    function renderCache() {
+      const container = document.getElementById('cache-entries');
+      container.innerHTML = cache.size
+        ? Array.from(cache.entries()).map(([k, v]) =>
+            `<div class="cache-item"><span>${k}</span><span>TTL: ${v.ttl}ms | Acc: ${v.accessCount}</span></div>`
+          ).join('')
+        : '<em>Cache empty</em>';
+      document.getElementById('cache-count').textContent = cache.size;
+      document.getElementById('cache-hits').textContent = cacheStats.hits;
+      document.getElementById('cache-misses').textContent = cacheStats.misses;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // DELTA: SYS
+    // ═══════════════════════════════════════════════════════════════════════
+    let sysState = 'stopped';
+    let sysStartTime = null;
+    let sysInterval = null;
+
+    function sysLog(msg, level = 'info') {
+      const log = document.getElementById('sys-log');
+      log.innerHTML += `<div class="log-entry log-${level}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function sysConfig() {
+      try {
+        const config = JSON.parse(document.getElementById('sys-config').value);
+        sysLog(`Config loaded: ${JSON.stringify(config)}`);
+      } catch (e) {
+        sysLog(`Config error: ${e.message}`, 'error');
+      }
+    }
+
+    function sysInit() {
+      if (sysState !== 'stopped') return sysLog('Already running', 'warn');
+      sysState = 'running';
+      sysStartTime = Date.now();
+      document.getElementById('sys-state').textContent = sysState;
+      sysLog('System initialized', 'info');
+    }
+
+    function sysMonitor() {
+      if (sysState !== 'running') return sysLog('System not running', 'warn');
+      if (sysInterval) clearInterval(sysInterval);
+      sysInterval = setInterval(() => {
+        const uptime = Math.floor((Date.now() - sysStartTime) / 1000);
+        document.getElementById('sys-uptime').textContent = `${uptime}s`;
+        sysLog(`Health check: OK (uptime: ${uptime}s)`);
+      }, 3000);
+      sysLog('Monitoring started (3s interval)');
+    }
+
+    function sysStop() {
+      if (sysInterval) clearInterval(sysInterval);
+      sysState = 'stopped';
+      sysStartTime = null;
+      document.getElementById('sys-state').textContent = sysState;
+      document.getElementById('sys-uptime').textContent = '0s';
+      sysLog('System stopped', 'warn');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // EPSILON: API
+    // ═══════════════════════════════════════════════════════════════════════
+    function apiRequest() {
+      const method = document.getElementById('api-method').value;
+      const path = document.getElementById('api-path').value;
+      let body = null;
+      try { body = JSON.parse(document.getElementById('api-body').value); } catch {}
+
+      // Simulate routing
+      const response = { status: 200, headers: { 'Content-Type': 'application/json' } };
+
+      if (path === '/health') {
+        response.body = { status: 'healthy', timestamp: Date.now() };
+      } else if (path === '/status') {
+        response.body = { phase: '✓', ready: true, kappa: 0.618 };
+      } else if (path.startsWith('/tags/')) {
+        const id = path.split('/')[2];
+        if (method === 'GET') {
+          response.body = { id, value: 42, quality: 'good' };
+        } else if (method === 'POST') {
+          response.body = { id, updated: true, ...body };
+        }
+      } else {
+        response.status = 404;
+        response.body = { error: 'Not found' };
+      }
+
+      document.getElementById('api-output').textContent =
+        `${response.status} ${response.status === 200 ? 'OK' : 'Error'}\n\n${JSON.stringify(response.body, null, 2)}`;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // ZETA: TEST
+    // ═══════════════════════════════════════════════════════════════════════
+    let testResults = [];
+
+    function assert(condition, message = 'Assertion failed') {
+      if (!condition) throw new Error(message);
+      testResults.push({ pass: true, message: message || 'assert(true)' });
+    }
+
+    function assertEqual(actual, expected) {
+      const pass = JSON.stringify(actual) === JSON.stringify(expected);
+      if (!pass) throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+      testResults.push({ pass: true, message: `assertEqual(${JSON.stringify(actual)}, ${JSON.stringify(expected)})` });
+    }
+
+    function assertThrows(fn) {
+      try { fn(); throw new Error('Expected function to throw'); }
+      catch (e) { if (e.message === 'Expected function to throw') throw e; }
+      testResults.push({ pass: true, message: 'assertThrows(fn)' });
+    }
+
+    function runTests() {
+      testResults = [];
+      const code = document.getElementById('test-code').value;
+      const resultsDiv = document.getElementById('test-results');
+      resultsDiv.innerHTML = '';
+
+      try {
+        eval(code);
+      } catch (e) {
+        testResults.push({ pass: false, message: e.message });
+      }
+
+      let passed = 0, failed = 0;
+      for (const r of testResults) {
+        resultsDiv.innerHTML += `<div class="test-result ${r.pass ? 'test-pass' : 'test-fail'}">${r.pass ? '✓' : '✗'} ${r.message}</div>`;
+        if (r.pass) passed++; else failed++;
+      }
+
+      document.getElementById('test-total').textContent = testResults.length;
+      document.getElementById('test-passed').textContent = passed;
+      document.getElementById('test-failed').textContent = failed;
+    }
+
+    function clearTests() {
+      testResults = [];
+      document.getElementById('test-results').innerHTML = '';
+      document.getElementById('test-total').textContent = '0';
+      document.getElementById('test-passed').textContent = '0';
+      document.getElementById('test-failed').textContent = '0';
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // ETA: DOC
+    // ═══════════════════════════════════════════════════════════════════════
+    let docTree = null;
+
+    function docExtract() {
+      const source = document.getElementById('doc-source').value;
+      const jsdocPattern = /\/\*\*\s*([\s\S]*?)\s*\*\/\s*(export\s+(?:function|class)\s+(\w+))/g;
+      const nodes = [];
+
+      let match;
+      while ((match = jsdocPattern.exec(source)) !== null) {
+        const comment = match[1];
+        const name = match[3];
+        const tags = [...comment.matchAll(/@(\w+)\s*(.*)/g)].map(t => ({ name: t[1], text: t[2].trim() }));
+        const desc = comment.split('@')[0].replace(/\*/g, '').trim();
+        nodes.push({ name, description: desc, tags, deprecated: tags.some(t => t.name === 'deprecated') });
+      }
+
+      docTree = { name: 'Module', nodes, generated: Date.now() };
+      document.getElementById('doc-output').textContent = JSON.stringify(docTree, null, 2);
+    }
+
+    function docGenerate(format) {
+      if (!docTree) return docExtract();
+
+      if (format === 'markdown') {
+        let md = '# API Documentation\n\n';
+        for (const n of docTree.nodes) {
+          md += `## ${n.name}${n.deprecated ? ' (DEPRECATED)' : ''}\n\n`;
+          md += `${n.description}\n\n`;
+          for (const t of n.tags) md += `- **@${t.name}** ${t.text}\n`;
+          md += '\n';
+        }
+        document.getElementById('doc-output').textContent = md;
+      } else {
+        let html = '<h1>API Documentation</h1>';
+        for (const n of docTree.nodes) {
+          html += `<h2>${n.name}${n.deprecated ? ' <span style="color:red">(DEPRECATED)</span>' : ''}</h2>`;
+          html += `<p>${n.description}</p><ul>`;
+          for (const t of n.tags) html += `<li><strong>@${t.name}</strong> ${t.text}</li>`;
+          html += '</ul>';
+        }
+        document.getElementById('doc-output').innerHTML = html;
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // THETA: SYNC
+    // ═══════════════════════════════════════════════════════════════════════
+    function syncDiff() {
+      try {
+        const oldObj = JSON.parse(document.getElementById('sync-old').value);
+        const newObj = JSON.parse(document.getElementById('sync-new').value);
+
+        const changes = [];
+        const allKeys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)]);
+
+        for (const key of allKeys) {
+          if (!(key in oldObj)) {
+            changes.push({ type: 'add', path: key, newValue: newObj[key] });
+          } else if (!(key in newObj)) {
+            changes.push({ type: 'delete', path: key, oldValue: oldObj[key] });
+          } else if (JSON.stringify(oldObj[key]) !== JSON.stringify(newObj[key])) {
+            changes.push({ type: 'modify', path: key, oldValue: oldObj[key], newValue: newObj[key] });
+          }
+        }
+
+        let output = `Found ${changes.length} changes:\n\n`;
+        for (const c of changes) {
+          if (c.type === 'add') output += `<span class="diff-add">+ ${c.path}: ${JSON.stringify(c.newValue)}</span>\n`;
+          else if (c.type === 'delete') output += `<span class="diff-del">- ${c.path}: ${JSON.stringify(c.oldValue)}</span>\n`;
+          else output += `<span class="diff-mod">~ ${c.path}: ${JSON.stringify(c.oldValue)} → ${JSON.stringify(c.newValue)}</span>\n`;
+        }
+
+        document.getElementById('sync-output').innerHTML = output;
+      } catch (e) {
+        document.getElementById('sync-output').textContent = `Error: ${e.message}`;
+      }
+    }
+
+    function syncMerge() {
+      syncDiff(); // Show diff first
+    }
+  </script>
+</body>
+</html>

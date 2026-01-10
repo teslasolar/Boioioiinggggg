@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KONOMI - Core Tools</title>
+  <style>
+    :root {
+      --gold: #d4af37;
+      --dark: #1a1a2e;
+      --darker: #16213e;
+      --accent: #0f3460;
+      --light: #e8e8e8;
+      --success: #4ecca3;
+      --warn: #ffd369;
+      --error: #ff6b6b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'SF Mono', 'Fira Code', monospace; background: var(--dark); color: var(--light); line-height: 1.618; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+    header { padding: 2rem; border-bottom: 2px solid var(--gold); margin-bottom: 2rem; }
+    h1 { color: var(--gold); font-size: 2rem; }
+    h2 { color: var(--gold); font-size: 1.4rem; margin: 2rem 0 1rem; }
+    h3 { color: var(--success); font-size: 1.1rem; margin: 1rem 0 0.5rem; }
+    a { color: var(--gold); }
+    .breadcrumb { margin-bottom: 1rem; font-size: 0.9rem; }
+    .breadcrumb a { color: var(--light); opacity: 0.7; }
+    .nav-back { display: inline-block; margin-bottom: 1rem; padding: 0.5rem 1rem; background: var(--accent); border-radius: 4px; text-decoration: none; color: var(--light); }
+    .tool-card { background: var(--darker); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; border: 1px solid var(--accent); }
+    .tool-card h3 { margin-top: 0; }
+    input, select, button { font-family: inherit; font-size: 1rem; padding: 0.75rem 1rem; border-radius: 6px; border: 1px solid var(--accent); background: var(--dark); color: var(--light); }
+    input:focus, select:focus { outline: none; border-color: var(--gold); }
+    button { background: var(--gold); color: var(--dark); cursor: pointer; font-weight: bold; border: none; }
+    button:hover { opacity: 0.9; }
+    button.secondary { background: var(--accent); color: var(--light); }
+    .input-group { display: flex; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
+    .input-group label { display: flex; align-items: center; gap: 0.5rem; }
+    .output { background: var(--dark); padding: 1rem; border-radius: 6px; margin-top: 1rem; border-left: 3px solid var(--gold); font-family: monospace; }
+    .output .value { color: var(--success); font-size: 1.2rem; }
+    .output .label { opacity: 0.7; font-size: 0.9rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .const-btn { background: var(--accent); padding: 1rem; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .const-btn:hover { background: var(--gold); color: var(--dark); }
+    .const-btn .symbol { font-size: 1.5rem; }
+    .const-btn .value { font-size: 0.9rem; color: var(--success); }
+    .tier-badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem; }
+    .tier-t0 { background: var(--success); color: var(--dark); }
+    .tier-t1 { background: var(--warn); color: var(--dark); }
+    .tier-t2 { background: #ff6b6b; color: var(--light); }
+    .tier-t3 { background: #c44569; color: var(--light); }
+    .kappa-slider { width: 100%; margin: 1rem 0; }
+    .kappa-display { display: flex; justify-content: space-between; align-items: center; margin: 1rem 0; }
+    .kappa-bar { height: 20px; background: linear-gradient(to right, var(--accent), var(--gold) 61.8%, var(--success)); border-radius: 4px; position: relative; }
+    .kappa-marker { position: absolute; top: -5px; width: 4px; height: 30px; background: white; border-radius: 2px; transition: left 0.1s; }
+    .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; }
+    .result-item { background: var(--dark); padding: 0.75rem; border-radius: 4px; text-align: center; }
+    .result-item .val { color: var(--success); font-size: 1.1rem; }
+    .result-item .lbl { font-size: 0.75rem; opacity: 0.7; }
+    .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .tab { padding: 0.5rem 1rem; background: var(--accent); border-radius: 4px; cursor: pointer; }
+    .tab.active { background: var(--gold); color: var(--dark); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    textarea { width: 100%; min-height: 150px; font-family: monospace; resize: vertical; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="breadcrumb">
+        <a href="../../../index.html">🌀 KONOMI</a> /
+        <a href="index.html">Core</a> /
+        Tools
+      </div>
+      <h1>🔮 Core Tools</h1>
+      <p>Interactive φ calculator, tier explorer, and kappa evaluator</p>
+    </header>
+
+    <a href="index.html" class="nav-back">← Back to Core Docs</a>
+
+    <!-- PHI CALCULATOR -->
+    <div class="tool-card">
+      <h3>⚡ φ Calculator</h3>
+      <p>Compute phi-derived values and explore golden ratio relationships.</p>
+
+      <div class="input-group">
+        <input type="number" id="phi-input" value="1" step="0.001" placeholder="Enter a number">
+        <select id="phi-operation">
+          <option value="multiply-phi">× φ (multiply by phi)</option>
+          <option value="divide-phi">÷ φ (divide by phi)</option>
+          <option value="power-phi">^ φ (power of phi)</option>
+          <option value="fib-approx">Fibonacci approximation</option>
+          <option value="golden-angle">Golden angle (degrees)</option>
+        </select>
+        <button onclick="calculatePhi()">Calculate</button>
+      </div>
+
+      <div class="output" id="phi-output">
+        <div class="label">Result:</div>
+        <div class="value" id="phi-result">—</div>
+        <div class="label" id="phi-formula"></div>
+      </div>
+
+      <h3 style="margin-top: 1.5rem;">Quick Constants</h3>
+      <p>Click to copy value:</p>
+      <div class="grid" id="constants-grid"></div>
+    </div>
+
+    <!-- TIER EXPLORER -->
+    <div class="tool-card">
+      <h3>⏱ Tier Explorer</h3>
+      <p>Explore computational tiers and their costs in Φu (phi units).</p>
+
+      <div class="tabs">
+        <div class="tab active" onclick="showTier('t0')">T0⚡</div>
+        <div class="tab" onclick="showTier('t1')">T1⏱</div>
+        <div class="tab" onclick="showTier('t2')">T2⏱</div>
+        <div class="tab" onclick="showTier('t3')">T3⏱</div>
+        <div class="tab" onclick="showTier('all')">All</div>
+      </div>
+
+      <div id="tier-content">
+        <div class="result-grid" id="tier-grid"></div>
+      </div>
+
+      <div class="output">
+        <div class="label">Total Cost:</div>
+        <div class="value" id="tier-cost">0 Φu</div>
+        <div class="label">Φu = log₂(φ) ≈ 0.694 bits</div>
+      </div>
+    </div>
+
+    <!-- KAPPA EVALUATOR -->
+    <div class="tool-card">
+      <h3>⚖️ Kappa (κ) Evaluator</h3>
+      <p>Explore the chaos/order balance parameter.</p>
+
+      <div class="kappa-display">
+        <span>Order (0)</span>
+        <span style="color: var(--gold);">κ* = 0.618</span>
+        <span>Chaos (1)</span>
+      </div>
+
+      <div class="kappa-bar">
+        <div class="kappa-marker" id="kappa-marker" style="left: 61.8%;"></div>
+      </div>
+
+      <input type="range" class="kappa-slider" id="kappa-slider" min="0" max="1" step="0.001" value="0.618" oninput="updateKappa(this.value)">
+
+      <div class="result-grid">
+        <div class="result-item">
+          <div class="val" id="kappa-value">0.618</div>
+          <div class="lbl">κ value</div>
+        </div>
+        <div class="result-item">
+          <div class="val" id="kappa-label">optimal</div>
+          <div class="lbl">State</div>
+        </div>
+        <div class="result-item">
+          <div class="val" id="kappa-chaos">62%</div>
+          <div class="lbl">Chaos</div>
+        </div>
+        <div class="result-item">
+          <div class="val" id="kappa-order">38%</div>
+          <div class="lbl">Order</div>
+        </div>
+      </div>
+
+      <div class="input-group" style="margin-top: 1rem;">
+        <button onclick="setKappa(0)">Pure Order</button>
+        <button onclick="setKappa(0.618)">Optimal (κ*)</button>
+        <button onclick="setKappa(1)">Pure Chaos</button>
+        <button class="secondary" onclick="setKappa(Math.random())">Random</button>
+      </div>
+    </div>
+
+    <!-- RESULT TYPE TESTER -->
+    <div class="tool-card">
+      <h3>✓✗ Result Type Tester</h3>
+      <p>Test success/failure result types.</p>
+
+      <div class="input-group">
+        <input type="text" id="result-value" placeholder="Enter a value" value="42">
+        <button onclick="testResult(true)">✓ Success</button>
+        <button onclick="testResult(false)" style="background: var(--error);">✗ Failure</button>
+      </div>
+
+      <div class="output">
+        <pre id="result-output">{
+  "ok": true,
+  "value": 42,
+  "symbol": "✓"
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // PHI CONSTANTS
+    const PHI = 1.6180339887498948482;
+    const KAPPA_STAR = 0.6180339887498948482;
+    const PHI_SQUARED = 2.6180339887498948482;
+    const INV_PHI_SQUARED = 0.3819660112501051518;
+    const SQRT_5 = 2.2360679774997896964;
+    const COS_36 = 0.8090169943749474241;
+    const COS_72 = 0.3090169943749474241;
+    const PHI_UNIT = 0.6942419136306173;
+    const SIGMA = 2.4142135623730950488;
+    const SQRT_2 = 1.4142135623730950488;
+    const SQRT_3 = 1.7320508075688772935;
+    const SQRT_6 = 2.4494897427831780982;
+    const SQRT_7 = 2.6457513110645905905;
+    const SQRT_10 = 3.1622776601683793320;
+    const PI = 3.1415926535897932385;
+    const E = 2.7182818284590452354;
+    const LN_2 = 0.6931471805599453094;
+
+    const CONSTANTS = {
+      t0: [
+        { symbol: 'φ', name: 'PHI', value: PHI },
+        { symbol: 'κ*', name: 'KAPPA_STAR', value: KAPPA_STAR },
+        { symbol: 'φ²', name: 'PHI_SQUARED', value: PHI_SQUARED },
+        { symbol: '1/φ²', name: 'INV_PHI_SQ', value: INV_PHI_SQUARED },
+        { symbol: '√5', name: 'SQRT_5', value: SQRT_5 },
+        { symbol: 'cos36°', name: 'COS_36', value: COS_36 },
+        { symbol: 'cos72°', name: 'COS_72', value: COS_72 },
+      ],
+      t1: [
+        { symbol: 'σ', name: 'SIGMA', value: SIGMA },
+        { symbol: '√2', name: 'SQRT_2', value: SQRT_2 },
+        { symbol: '√3', name: 'SQRT_3', value: SQRT_3 },
+      ],
+      t2: [
+        { symbol: '√6', name: 'SQRT_6', value: SQRT_6 },
+        { symbol: '√7', name: 'SQRT_7', value: SQRT_7 },
+        { symbol: '√10', name: 'SQRT_10', value: SQRT_10 },
+      ],
+      t3: [
+        { symbol: 'π', name: 'PI', value: PI },
+        { symbol: 'e', name: 'E', value: E },
+        { symbol: 'ln2', name: 'LN_2', value: LN_2 },
+      ]
+    };
+
+    const TIER_COSTS = { t0: 0, t1: 2 * PHI_UNIT, t2: 4 * PHI_UNIT, t3: 10 * PHI_UNIT };
+
+    // Initialize constants grid
+    function initConstantsGrid() {
+      const grid = document.getElementById('constants-grid');
+      const all = [...CONSTANTS.t0, ...CONSTANTS.t1, ...CONSTANTS.t2, ...CONSTANTS.t3];
+      grid.innerHTML = all.map(c => `
+        <div class="const-btn" onclick="copyConstant(${c.value}, '${c.symbol}')">
+          <div class="symbol">${c.symbol}</div>
+          <div class="value">${c.value.toFixed(6)}</div>
+        </div>
+      `).join('');
+    }
+
+    function copyConstant(value, symbol) {
+      navigator.clipboard.writeText(value.toString());
+      alert(`Copied ${symbol} = ${value}`);
+    }
+
+    // PHI Calculator
+    function calculatePhi() {
+      const input = parseFloat(document.getElementById('phi-input').value);
+      const op = document.getElementById('phi-operation').value;
+      let result, formula;
+
+      switch(op) {
+        case 'multiply-phi':
+          result = input * PHI;
+          formula = `${input} × φ = ${result.toFixed(10)}`;
+          break;
+        case 'divide-phi':
+          result = input / PHI;
+          formula = `${input} ÷ φ = ${result.toFixed(10)}`;
+          break;
+        case 'power-phi':
+          result = Math.pow(PHI, input);
+          formula = `φ^${input} = ${result.toFixed(10)}`;
+          break;
+        case 'fib-approx':
+          result = Math.round(Math.pow(PHI, input) / SQRT_5);
+          formula = `F(${input}) ≈ φ^${input} / √5 = ${result}`;
+          break;
+        case 'golden-angle':
+          result = 360 / (PHI * PHI) * input;
+          formula = `${input} × (360° / φ²) = ${result.toFixed(4)}°`;
+          break;
+      }
+
+      document.getElementById('phi-result').textContent = result;
+      document.getElementById('phi-formula').textContent = formula;
+    }
+
+    // Tier Explorer
+    function showTier(tier) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const grid = document.getElementById('tier-grid');
+      let constants = [];
+      let totalCost = 0;
+
+      if (tier === 'all') {
+        constants = [...CONSTANTS.t0, ...CONSTANTS.t1, ...CONSTANTS.t2, ...CONSTANTS.t3];
+        totalCost = TIER_COSTS.t0 * CONSTANTS.t0.length +
+                   TIER_COSTS.t1 * CONSTANTS.t1.length +
+                   TIER_COSTS.t2 * CONSTANTS.t2.length +
+                   TIER_COSTS.t3 * CONSTANTS.t3.length;
+      } else {
+        constants = CONSTANTS[tier];
+        totalCost = TIER_COSTS[tier] * constants.length;
+      }
+
+      grid.innerHTML = constants.map(c => {
+        const t = Object.entries(CONSTANTS).find(([k, v]) => v.includes(c))?.[0] || 't0';
+        return `
+          <div class="result-item">
+            <div class="val">${c.symbol}</div>
+            <div class="lbl">${c.value.toFixed(4)}</div>
+            <span class="tier-badge tier-${t}">${t.toUpperCase()}</span>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('tier-cost').textContent = `${totalCost.toFixed(3)} Φu`;
+    }
+
+    // Kappa Evaluator
+    function updateKappa(value) {
+      const kappa = parseFloat(value);
+      document.getElementById('kappa-marker').style.left = `${kappa * 100}%`;
+      document.getElementById('kappa-value').textContent = kappa.toFixed(3);
+
+      const threshold = 0.1;
+      const isOptimal = Math.abs(kappa - KAPPA_STAR) < threshold;
+      const label = isOptimal ? 'optimal' : kappa < 0.5 ? 'order' : 'chaos';
+
+      document.getElementById('kappa-label').textContent = label;
+      document.getElementById('kappa-label').style.color =
+        label === 'optimal' ? 'var(--gold)' :
+        label === 'order' ? 'var(--accent)' : 'var(--success)';
+
+      document.getElementById('kappa-chaos').textContent = `${(kappa * 100).toFixed(1)}%`;
+      document.getElementById('kappa-order').textContent = `${((1 - kappa) * 100).toFixed(1)}%`;
+    }
+
+    function setKappa(value) {
+      document.getElementById('kappa-slider').value = value;
+      updateKappa(value);
+    }
+
+    // Result Type Tester
+    function testResult(isSuccess) {
+      const value = document.getElementById('result-value').value;
+      let parsed;
+      try {
+        parsed = JSON.parse(value);
+      } catch {
+        parsed = isNaN(value) ? value : parseFloat(value);
+      }
+
+      const result = isSuccess
+        ? { ok: true, value: parsed, symbol: '✓' }
+        : { ok: false, error: { message: `Failed: ${parsed}` }, symbol: '✗' };
+
+      document.getElementById('result-output').textContent = JSON.stringify(result, null, 2);
+    }
+
+    // Initialize
+    initConstantsGrid();
+    showTier('t0');
+  </script>
+</body>
+</html>
